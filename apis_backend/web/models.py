@@ -41,4 +41,4 @@ class Recognition(models.Model):
     class Meta:
         verbose_name = "Reconocimiento"
         verbose_name_plural = "Reconocimientos"
-  
+    
