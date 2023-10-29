@@ -3,13 +3,13 @@ from django.db import models
 from django.core.validators import FileExtensionValidator 
 
 class Detection(models.Model):
-    latitude = models.CharField(max_length = 15)
-    longitude = models.CharField(max_length = 15)
     datetime = models.DateTimeField("Date and time of detection")
     frame = models.ImageField(upload_to = "frames/", null = True) 
     video = models.FileField(upload_to = "videos/", null = True,
         validators = [FileExtensionValidator(allowed_extensions = ['MOV','avi','mp4','webm','mkv'])]
     )
+    latitude = models.CharField(max_length = 15)
+    longitude = models.CharField(max_length = 15)
 
 class Pigeon(models.Model):
     name = models.CharField(max_length = 15)
