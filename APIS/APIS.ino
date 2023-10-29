@@ -1,3 +1,5 @@
+#include <WiFi.h>
+#include <HTTPClient.h>
 #include<ESP32Servo.h>
 #include "UltraSonic.h"
 #include "ServoC.h"
@@ -7,12 +9,23 @@ UltraSonic ultrasonic(2, 4);
 ServoC servo(23);
 Alarm alarmC(5);
 
+const char *ssid = "LTR";
+const char *password = "2J8LQV5L";
+
+const char* serverUrl = "https://shark-app-ko77v.ondigitalocean.app/detections/";
+const char* contentType = "application/json";
+
 void setup() {
   // put your setup code here, to run once:
   ultrasonic.begin();
   servo.begin();
   alarmC.begin();
+  WiFi.begin(ssid, password);
   Serial.begin(9600);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(1000);
+    Serial.println("Conectando a la red WiFi...");
+  }
 }
 int pos = 20;
 int f = 1;
@@ -28,6 +41,19 @@ void loop() {
   Serial.println(x);
   delay(500);
   if (find) {
+    if (WiFi.status() == WL_CONNECTED) {
+      HTTPClient http;
+      http.begin(serverUrl);
+      http.addHeader("Content-Type", contentType);
+      String payload = "{\"frame\": null, \"video\": null, \"latitude\": " + String(pos) + ", \"longitude\": " + String(d) + "}";
+      int httpResponseCode = http.POST(payload);
+      String response = http.getString();
+      Serial.print("HTTP Response Code: ");
+      Serial.println(httpResponseCode);
+      Serial.print("Response: ");
+      Serial.println(response);
+      http.end();
+    }
     alarmC.tick();
     x = 0;
   } else {
