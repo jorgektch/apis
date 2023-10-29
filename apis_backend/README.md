@@ -13,18 +13,17 @@ python -m venv env
 Activar el entorno virtual creado
 
 ```sh
-$ .\env\Scripts\activate
-(env)$
+.\env\Scripts\activate
 ```
 
 Instalar los requerimientos
 
 ```sh
-(env)$ pip install -r requirements.txt
+pip install -r requirements.txt
 ```
 
 Iniciar el servidor django
 
 ```sh
-(env)$ python manage.py runserver 0.0.0.0:8000
+python manage.py runserver 0.0.0.0:8000
 ```
