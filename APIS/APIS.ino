@@ -45,7 +45,7 @@ void loop() {
       HTTPClient http;
       http.begin(serverUrl);
       http.addHeader("Content-Type", contentType);
-      String payload = "{\"frame\": null, \"video\": null, \"latitude\": " + String(pos) + ", \"longitude\": " + String(d) + "}";
+      String payload = "{\"frame\": null, \"video\": null, \"latitude\": " + String(-10.049) + ", \"longitude\": " + String(-79.06) + "}";
       int httpResponseCode = http.POST(payload);
       String response = http.getString();
       Serial.print("HTTP Response Code: ");
