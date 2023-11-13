@@ -31,6 +31,7 @@ int pos = 20;
 int f = 1;
 int find = false;
 int x = 0;
+
 void loop() {
   // put your main code here, to run repeatedly:
   int d = ultrasonic.getDistance();
@@ -41,7 +42,7 @@ void loop() {
   Serial.println(x);
   delay(500);
   if (find) {
-    if (WiFi.status() == WL_CONNECTED) {
+    /* if (WiFi.status() == WL_CONNECTED) {
       HTTPClient http;
       http.begin(serverUrl);
       http.addHeader("Content-Type", contentType);
@@ -53,7 +54,7 @@ void loop() {
       Serial.print("Response: ");
       Serial.println(response);
       http.end();
-    }
+    } */
     alarmC.tick();
     x = 0;
   } else {
