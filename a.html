@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESP32CAM Image Viewer</title>
+</head>
+<body>
+    <img id="cameraImage" src="#" alt="Camera Image">
+
+    <script>
+        // Reemplaza 'tu_ip' con la dirección IP de tu ESP32CAM
+        const cameraUrl = 'http://192.168.19.129/capture';
+
+        function updateCameraImage() {
+            // Agrega un timestamp a la URL para evitar el almacenamiento en caché
+            const imageUrl = `${cameraUrl}?_t=${Date.now()}`;
+
+            // Realiza la solicitud GET
+            fetch(imageUrl)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.blob();
+                })
+                .then(blob => {
+                    // Crea un objeto URL para la imagen
+                    const imageUrl = URL.createObjectURL(blob);
+
+                    // Actualiza la fuente de la imagen en el elemento img
+                    document.getElementById('cameraImage').src = imageUrl;
+                })
+                .catch(error => {
+                    console.error('Error fetching camera image:', error);
+                });
+        }
+
+        // Actualiza la imagen cada 5 segundos (5000 ms)
+        setInterval(updateCameraImage, 5000);
+
+        // Actualiza la imagen al cargar la página
+        window.onload = updateCameraImage;
+    </script>
+</body>
+</html>
