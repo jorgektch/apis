@@ -1,13 +1,14 @@
 #include <WiFi.h>
 #include <HTTPClient.h>
 #include<ESP32Servo.h>
+#include <FS.h>
 #include "UltraSonic.h"
 #include "Controller.h"
-//#include "ServoC.h"
+#include "ServoC.h"
 #include "Alarm.h"
 
 UltraSonic ultrasonic(2, 4);
-//ServoC servo(23);
+ServoC servo(23);
 Alarm alarmC(5);
 
 const char *ssid = "LT";
@@ -18,9 +19,9 @@ const char* contentType = "application/json";
 const char* cameraServer = "http://192.168.19.129/capture";
 
 void setup() {
-  // put your setup code here, to run once:
+  // put your setup code here, to run once:+
   ultrasonic.begin();
-  //servo.begin();
+  servo.begin();
   alarmC.begin();
   WiFi.begin(ssid, password);
   Serial.begin(19200);
@@ -30,7 +31,10 @@ void setup() {
   }
 }
 
-int find = false;
+bool find = false;
+int factor = 1;
+byte angle = 20;
+byte cont = 0;
 
 void loop() {
   // put your main code here, to run repeatedly:
@@ -51,7 +55,7 @@ void loop() {
           // Imprimir la data de la imagen en el monitor serial
           String image_data = http.getString();
           if (isBird(image_data)) {
-            Serial.println("Pajaro detectado!");
+            Serial.println("PAJARO!");
           }
         } else {
           Serial.println("Error en la solicitud HTTP");
@@ -62,6 +66,27 @@ void loop() {
 
       http.end();
     }
+    cont=0;
+  } else {
+    if (cont==5) {
+      angle += factor*40;
+      servo.move(angle, factor);
+      if (angle == 140) {
+        factor = -1;
+      }
+      if (angle==20) {
+        factor =1;
+      }
+      cont=0;
+    } else {
+      cont++;
+    }
+    Serial.print("Contador: ");
+    Serial.println(cont);
+    Serial.print("Factor: ");
+    Serial.println(factor);
+    Serial.print("Angle: ");
+    Serial.println(angle);
   }
 }
 
