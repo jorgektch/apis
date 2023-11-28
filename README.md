@@ -2,14 +2,14 @@
 
 Sistema Inteligente Anti Palomas
 
-# Presentación
+## Presentación
 
 URL Canva: https://www.canva.com/design/DAF1bbxxpAc/BdC7XWTE5q4LYlQMSiGj0Q/edit
 
-# API
+## API
 
 URL API: https://shark-app-ko77v.ondigitalocean.app/
 
-# Panel de monitoreo
+## Panel de monitoreo
 
 URL Pane de Control: https://shark-app-ko77v.ondigitalocean.app/admin
