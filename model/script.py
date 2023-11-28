@@ -21,7 +21,7 @@ classes = {0:"background", 1:"aeroplane", 2:"bicycle",
 net = cv2.dnn.readNetFromCaffe(prototxt, model)
 
 # ----------- READ THE IMAGE AND PREPROCESSING -----------
-image = cv2.imread("model/fotograma-001.jpg")
+image = cv2.imread("fotograma-003.jpg")
 height, width, _ = image.shape
 image_resized = cv2.resize(image, (300, 300))
 
