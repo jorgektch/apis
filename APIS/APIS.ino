@@ -1,6 +1,8 @@
 #include <WiFi.h>
 #include <HTTPClient.h>
 #include<ESP32Servo.h>
+#include<Arduino_JSON.h>
+#include<base64.h>
 #include <FS.h>
 #include "UltraSonic.h"
 #include "Controller.h"
@@ -14,9 +16,14 @@ Alarm alarmC(5);
 const char *ssid = "LT";
 const char *password = "prudencio";
 
-const char* serverUrl = "https://shark-app-ko77v.ondigitalocean.app/detections/";
+/* const char* ssid = "LTR";
+const char* password = "2J8LQV5L"; */
+
+// const char* serverUrl = "https://shark-app-ko77v.ondigitalocean.app/web/sendImg/";
+const char* serverUrl = "http://192.168.163.193:8000/web/sendImg/";
 const char* contentType = "application/json";
-const char* cameraServer = "http://192.168.19.129/capture";
+// const char* contentType = "application/x-www-form-urlencoded";
+const char* cameraServer = "http://192.168.163.129/capture";
 
 void setup() {
   // put your setup code here, to run once:+
@@ -37,26 +44,31 @@ byte angle = 20;
 byte cont = 0;
 
 void loop() {
-  // put your main code here, to run repeatedly:
   int d = ultrasonic.getDistance();
   find = d>=0 && d<=20;
-  /* Serial.print("Distance: ");
-  Serial.println(d); */
   delay(500);
   if (find) {
     if (WiFi.status() == WL_CONNECTED) {
       alarmC.tick();
+      
       HTTPClient http;
       http.begin(cameraServer);
 
       int httpCode = http.GET();
       if (httpCode > 0) {
         if (httpCode == HTTP_CODE_OK) {
-          // Imprimir la data de la imagen en el monitor serial
           String image_data = http.getString();
-          if (isBird(image_data)) {
-            Serial.println("PAJARO!");
-          }
+          http.end();
+          http.begin(serverUrl);
+          http.addHeader("Content-Type", contentType);
+          String payload = "{\"frame\":\"" + base64::encode((uint8_t*)image_data.c_str(), image_data.length()) + "\"}";
+          int httpResponseCode = http.POST(payload);
+          String response = http.getString();
+          Serial.print("HTTP Response Code: ");
+          Serial.println(httpResponseCode);
+          Serial.print("Response: ");
+          Serial.println(response);
+          http.end();
         } else {
           Serial.println("Error en la solicitud HTTP");
         }
@@ -64,8 +76,75 @@ void loop() {
         Serial.println("Error en la conexión HTTP");
       }
 
-      http.end();
     }
+    /* if (WiFi.status() == WL_CONNECTED) {
+      alarmC.tick();
+      HTTPClient http;
+      http.begin(cameraServer);
+
+      int httpCode = http.GET();
+      if (httpCode > 0) {
+        if (httpCode == HTTP_CODE_OK) {
+          const int bufferSize = 1024;
+          uint8_t buffer[bufferSize];
+          size_t bytesRead;
+          // Descargar los datos binarios de la imagen directamente
+          WiFiClient *stream = http.getStreamPtr();
+          memset(buffer, 0, bufferSize);
+          bytesRead = stream->readBytes(buffer, bufferSize);
+
+          // Codificar los datos en base64
+          String image_data_base64 = base64::encode(buffer, bytesRead);
+
+          http.end();
+
+          // Realizar la solicitud POST al servidor Django con los datos codificados en base64
+          http.begin(serverUrl);
+          http.addHeader("Content-Type", contentType);
+          String payload = "frame=" + image_data_base64;
+          int httpResponseCode = http.POST(payload);
+          String response = http.getString();
+          Serial.print("HTTP Response Code: ");
+          Serial.println(httpResponseCode);
+          Serial.print("Response: ");
+          Serial.println(response);
+          http.end();
+        } else {
+          Serial.println("Error en la solicitud HTTP");
+        }
+      } else {
+        Serial.println("Error en la conexión HTTP");
+      }
+    } */
+    /* if (WiFi.status() == WL_CONNECTED) {
+      alarmC.tick();
+      
+      HTTPClient http;
+      http.begin(cameraServer);
+
+      int httpCode = http.GET();
+      if (httpCode > 0) {
+        if (httpCode == HTTP_CODE_OK) {
+          String image_data = http.getString();
+          http.end();
+          http.begin(serverUrl);
+          http.addHeader("Content-Type", contentType);
+          String payload = "{\"frame\": " + image_data + "}";
+          int httpResponseCode = http.POST(payload);
+          String response = http.getString();
+          Serial.print("HTTP Response Code: ");
+          Serial.println(httpResponseCode);
+          Serial.print("Response: ");
+          Serial.println(response);
+          http.end();
+        } else {
+          Serial.println("Error en la solicitud HTTP");
+        }
+      } else {
+        Serial.println("Error en la conexión HTTP");
+      }
+
+    } */
     cont=0;
   } else {
     if (cont==5) {
@@ -81,23 +160,5 @@ void loop() {
     } else {
       cont++;
     }
-    Serial.print("Contador: ");
-    Serial.println(cont);
-    Serial.print("Factor: ");
-    Serial.println(factor);
-    Serial.print("Angle: ");
-    Serial.println(angle);
   }
 }
-
-      /* HTTPClient http;
-      http.begin(serverUrl);
-      http.addHeader("Content-Type", contentType);
-      String payload = "{\"frame\": null, \"video\": null, \"latitude\": " + String(-10.049) + ", \"longitude\": " + String(-79.06) + "}";
-      int httpResponseCode = http.POST(payload);
-      String response = http.getString();
-      Serial.print("HTTP Response Code: ");
-      Serial.println(httpResponseCode);
-      Serial.print("Response: ");
-      Serial.println(response);
-      http.end(); */

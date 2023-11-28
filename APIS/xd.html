@@ -10,7 +10,7 @@
 
     <script>
         // Reemplaza 'tu_ip' con la dirección IP de tu ESP32CAM
-        const cameraUrl = 'http://192.168.19.129/capture';
+        const cameraUrl = 'http://192.168.163.129/capture';
 
         function updateCameraImage() {
             // Agrega un timestamp a la URL para evitar el almacenamiento en caché
@@ -37,7 +37,7 @@
                 })
                 .then(base64data => {
                     // Imprime la cadena Base64 en la consola y muestra en el HTML
-                    document.write(base64data + "</br>");
+                    //document.write(base64data + "</br>");
                     document.getElementById('cameraImage').src = 'data:image/jpeg;base64,' + base64data;
                 })
                 .catch(error => {
@@ -46,7 +46,7 @@
         }
 
         // Actualiza la imagen cada 5 segundos (5000 ms)
-        setInterval(updateCameraImage, 5000);
+        setInterval(updateCameraImage, 100);
 
         // Actualiza la imagen al cargar la página
         window.onload = updateCameraImage;

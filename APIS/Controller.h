@@ -7,5 +7,5 @@ bool isBird(String photo) {
 }
 
 void atack() {
-
+    
 }

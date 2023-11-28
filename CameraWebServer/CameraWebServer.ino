@@ -37,6 +37,8 @@
 // ===========================
 const char* ssid = "LT";
 const char* password = "prudencio";
+/* const char* ssid = "LTR";
+const char* password = "2J8LQV5L"; */
 
 void startCameraServer();
 void setupLedFlash(int pin);
