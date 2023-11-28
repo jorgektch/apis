@@ -9,6 +9,12 @@
 #include "ServoC.h"
 #include "Alarm.h"
 
+void parseJsonString(String jsonString, String& mostConfidentLabel, double& confidence) {
+  int index = jsonString.indexOf(',');
+  mostConfidentLabel = jsonString.substring(26, index-1);
+  confidence = jsonString.substring(index+16, jsonString.length()-1).toDouble();
+}
+
 UltraSonic ultrasonic(2, 4);
 ServoC servo(23);
 Alarm alarmC(5);
@@ -49,8 +55,6 @@ void loop() {
   delay(500);
   if (find) {
     if (WiFi.status() == WL_CONNECTED) {
-      alarmC.tick();
-      
       HTTPClient http;
       http.begin(cameraServer);
 
@@ -68,7 +72,15 @@ void loop() {
           Serial.println(httpResponseCode);
           Serial.print("Response: ");
           Serial.println(response);
+          String mostConfidentLabel;
+          double confidence;
+          parseJsonString(response, mostConfidentLabel, confidence);
+          /* Serial.println(mostConfidentLabel);
+          Serial.println(confidence); */
           http.end();
+          if (mostConfidentLabel == "person" && confidence > 0.7) {
+            alarmC.tick();
+          }
         } else {
           Serial.println("Error en la solicitud HTTP");
         }
